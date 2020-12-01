@@ -1,0 +1,106 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+options: author:t broken-links:nil c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: Advent of Code 2020
+#+date: <2020-12-01 Di>
+#+author: Raffael Affolter
+#+email: raffael@raffael-pc
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 27.1 (Org mode 9.4)
+
+* Setup
+
+ We need deps.edn file for clojure
+ #+Name deps.edn
+ #+begin_src clojure :tangle ./deps.edn :results silent
+{:deps {org.clojure/clojure {:mvn/version "1.10.1"}}}
+ #+end_src
+
+* Day 1
+
+** Task 1
+*** Problem description
+   Given an Input of numbers, find the two whose sum is equal to 2020,
+   then multiply them.
+
+***  Analysis
+
+    This problem can be solved dirty or not. First there are only two
+    numbers whose sum is equal to 2020 but a summing is commutative
+    meaning we can get two results if we do not stop when we find the
+    first pair. For example, if we find the pair 20, 2000 in the list
+    it is not necessary to go on otherwise we get the pair 2000 20.
+
+*** Solution
+
+    To solve this we can use a list comprehension which we abort
+    when we meet our exit condition.
+
+    So this is how I did it:
+    1. Sort the input list
+    2. Make a list comprehension which tests if the sum of two numbers
+       equals 220. Do this only so long the first number is smaller or equal
+       than the second.
+    3. Multiply those numbers.
+
+#+NAME:day-1-task-1
+#+begin_src clojure :results value pp replace :exports both
+(def input-day-1 (map #(Integer/parseInt %) (clojure.string/split-lines (slurp "./input/day1/input.txt"))))
+
+(def sorted-day-1 (sort input-day-1))
+
+
+(def result (first (for [x1 sorted-day-1
+                        x2 sorted-day-1
+                         :when (= 2020 (+ x1 x2))
+                         :while (<= x1 x2)]
+
+                    (* x1 x2))))
+
+(str "The result is: " result)
+#+end_src
+
+#+RESULTS: day-1-task-1
+: "The result is: 1006176"
+:
+
+
+** Task 2
+
+*** Problem description
+   Given an Input of numbers, find the three whose sum is equal to 2020,
+   then multiply them.
+
+***  Analysis
+    This is similar to the first one but if the list would not only be
+    200 items long but longer you could run into runtime issues. Since
+    we would have to go trough the first list to check if its sum an
+    item from the second list and the sum with one from the third list
+    is equal to 2020 we have 3 nested for loops. This woudl result in
+    a runtime of O(n^3). Again we need to stop when we find the first triple.
+
+*** Solution
+
+    To solve this we modify the code of task one and like the following:
+
+#+NAME:day-1-task-2
+#+begin_src clojure :results value pp replace :exports both
+(def result (first (for [x1 sorted-day-1
+                         x2 sorted-day-1
+                         x3 sorted-day-1
+                         :when (= 2020 (+ x1 x2 x3))
+                         :while (<= x1 x2 x3)]
+
+                     (* x1 x2 x3))))
+
+
+(str "The result is: " result)
+#+end_src
+
+#+RESULTS: day-1-task-2
+: "The result is: 199132160"
+:
